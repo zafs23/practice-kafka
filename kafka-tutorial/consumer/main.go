@@ -10,7 +10,8 @@ import (
 
 func main() {
 	// Kafka configuration
-	brokers := []string{"kafka:9092"}
+	brokers := []string{"kafka:9092"} // multi container when using docker compose --build
+	// brokers := []string{"localhost:29092"}
 	topic := "TEST_TOPIC"
 	groupID := "consumerGroup"
 
