@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// Kafka configuration
-	brokers := []string{"localhost:9093"}
+	brokers := []string{"kafka:9092"}
 	topic := "TEST_TOPIC"
 	groupID := "consumerGroup"
 
