@@ -1,0 +1,50 @@
+pipeline:
+  stages:
+    - name: build-producer
+      steps: 
+      - name: build-producer-image
+        frontend: dockerfile.dockerfile.v0
+        inputs:
+          context: producer 
+          dockerfile: producer/Dockerfile
+        opts:
+          build-arg:
+            BUILDKIT_INLINE_CACHE: "1" 
+    
+    - name: build-consumer
+      steps:
+      - name: build-consumer-image
+        frontend: dockerfile.dockerfile.v0
+        inputs:
+          context: producer 
+          dockerfile: consumer/Dockerfile
+        opts:
+          build-arg:
+            BUILDKIT_INLINE_CACHE: "1"
+    
+    - name: tag-images
+      steps: 
+      - name: tag-producer
+        run:
+          cmd: ["docker", "tag", "producer:latest", "producer:v1.0.0"]
+      - name: tag-consumer
+        run:
+          cmd: ["docker", "tag", "consumer:latest", "consumer:v1.0.0"]
+
+    - name: run-go-tests
+      steps: 
+        - name: test-producer
+          run: 
+            cmd: ["bash", "-C", "cd producer && go test -cover -coverprofile=coverage.out ./..."]
+        - name: test-consumer
+          run: 
+            cmd: ["bash", "-C", "cd consumer && go test -cover -coverprofile=coverage.out ./..."]
+    - name: push-images
+      steps: 
+        - name: push-producer
+          run: 
+            cmd: ["docker", "push", "producer:v1.0.0"]
+        - name: push-consumer
+          run: 
+            cmd: ["docker", "push", "consumer:v1.0.0"]
+
