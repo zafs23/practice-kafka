@@ -13,10 +13,6 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
 
-service: 
-  host: "kafka-tutorial.local"
-  port: 8080
-  type: NodePort
 
 ingress: 
   enables: true
@@ -80,3 +76,9 @@ consumer:
     type: NodePort
     port: 8081
     nodePort: 30081
+
+
+service: 
+  host: "kafka-tutorial.local"
+  port: 8080
+  type: NodePort

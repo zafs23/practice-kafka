@@ -92,7 +92,7 @@ spec:
       containers:
         - name: consumer
           image: "{{ .Values.consumer.image }}"
-          imagePullPolicy: "{{ .Values.producer.imagePullPolicy }}"
+          imagePullPolicy: "{{ .Values.consumer.imagePullPolicy }}"
           env:
             - name: KAFKA_BROKER
               value: "kafka:{{ .Values.kafka.service.port }}"
