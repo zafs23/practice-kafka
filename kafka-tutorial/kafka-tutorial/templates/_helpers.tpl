@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "kafka-tutorial.name" -}}
+{{- define "kaka-tutorial.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "kafka-tutorial.fullname" -}}
+{{- define "kaka-tutorial.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "kafka-tutorial.chart" -}}
+{{- define "kaka-tutorial.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "kafka-tutorial.labels" -}}
-helm.sh/chart: {{ include "kafka-tutorial.chart" . }}
-{{ include "kafka-tutorial.selectorLabels" . }}
+{{- define "kaka-tutorial.labels" -}}
+helm.sh/chart: {{ include "kaka-tutorial.chart" . }}
+{{ include "kaka-tutorial.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "kafka-tutorial.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "kafka-tutorial.name" . }}
+{{- define "kaka-tutorial.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "kaka-tutorial.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "kafka-tutorial.serviceAccountName" -}}
+{{- define "kaka-tutorial.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "kafka-tutorial.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "kaka-tutorial.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

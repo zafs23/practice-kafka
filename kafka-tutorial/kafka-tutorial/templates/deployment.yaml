@@ -16,7 +16,7 @@ spec:
         - name: zookeeper
           image: "{{ .Values.zookeeper.image }}"
           ports:
-            - containerPort: 2181
+            - containerPort: {{ .Values.zookeeper.service.port }}
 
 --- 
 apiVersion: apps/v1
@@ -37,10 +37,12 @@ spec:
         - name: kafka
           image: "{{ .Values.kafka.image }}"
           env:
-            - name: KAFKA_ZOOKEEPER_CONNECT
-              value: "zookeeper:2181"
+            {{- range $env := .Values.kafka.environment }}
+            - name: "{{ $env.name }}"
+              value: "{{ $env.value }}"
+            {{- end }}
           ports:
-            - containerPort: 2181
+            - containerPort: {{ .Values.kafka.service.port }}
 
 --- 
 apiVersion: apps/v1
@@ -60,11 +62,12 @@ spec:
       containers:
         - name: producer
           image: "{{ .Values.producer.image }}"
+          imagePullPolicy: "{{ .Values.producer.imagePullPolicy }}"
           env:
             - name: KAFKA_BROKER
-              value: "kafka:9092"
+              value: "kafka:{{ .Values.kafka.service.port }}"
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.producer.service.port }}
 
 --- 
 apiVersion: apps/v1
@@ -84,8 +87,9 @@ spec:
       containers:
         - name: consumer
           image: "{{ .Values.consumer.image }}"
+          imagePullPolicy: "{{ .Values.producer.imagePullPolicy }}"
           env:
             - name: KAFKA_BROKER
-              value: "kafka:9092"
+              value: "kafka:{{ .Values.kafka.service.port }}"
           ports:
-            - containerPort: 8081
+            - containerPort: {{ .Values.consumer.service.port }}
