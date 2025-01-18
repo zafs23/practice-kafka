@@ -30,6 +30,9 @@ zookeeper:
   enabled: true
   image: confluentinc/cp-zookeeper:latest
   imagePullPolicy: Never
+  environment:
+    - name: ZOOKEEPER_CLIENT_PORT
+      value: "2181"
   service:
     type: ClusterIP
     port: 2181
@@ -50,6 +53,8 @@ kafka:
     - name: KAFKA_INTER_BROKER_LISTENER_NAME
       value: "PLAINTEXT"
     - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+      value: "1"
+    - name : KAFKA_BROKER_ID
       value: "1"
   service:
     type: NodePort

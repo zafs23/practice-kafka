@@ -15,6 +15,11 @@ spec:
       containers:
         - name: zookeeper
           image: "{{ .Values.zookeeper.image }}"
+          env:
+          {{- range $env := .Values.zookeeper.environment }}
+            - name: "{{ $env.name }}"
+              value: "{{ $env.value }}"
+          {{- end }}
           ports:
             - containerPort: {{ .Values.zookeeper.service.port }}
 
@@ -42,7 +47,7 @@ spec:
               value: "{{ $env.value }}"
             {{- end }}
           ports:
-            - containerPort: {{ .Values.kafka.service.port }}
+            - containerPort: 9092
 
 --- 
 apiVersion: apps/v1
