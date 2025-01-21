@@ -27,22 +27,22 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kafka
+  name: kafkanew
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kafka
+      app: kafkanew
   template:
     metadata:
       labels:
-        app: kafka
+        app: kafkanew
     spec:
       containers:
-        - name: kafka
-          image: "{{ .Values.kafka.image }}"
+        - name: kafkanew
+          image: "{{ .Values.kafkanew.image }}"
           env:
-            {{- range $env := .Values.kafka.environment }}
+            {{- range $env := .Values.kafkanew.environment }}
             - name: "{{ $env.name }}"
               value: "{{ $env.value }}"
             {{- end }}
@@ -70,7 +70,7 @@ spec:
           imagePullPolicy: "{{ .Values.producer.imagePullPolicy }}"
           env:
             - name: KAFKA_BROKER
-              value: "kafka:{{ .Values.kafka.service.port }}"
+              value: "kafka:{{ .Values.kafkanew.service.port }}"
           ports:
             - containerPort: {{ .Values.producer.service.port }}
 
@@ -95,6 +95,6 @@ spec:
           imagePullPolicy: "{{ .Values.consumer.imagePullPolicy }}"
           env:
             - name: KAFKA_BROKER
-              value: "kafka:{{ .Values.kafka.service.port }}"
+              value: "kafka:{{ .Values.kafkanew.service.port }}"
           ports:
             - containerPort: {{ .Values.consumer.service.port }}

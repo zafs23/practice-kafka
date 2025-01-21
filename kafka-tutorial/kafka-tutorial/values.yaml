@@ -34,10 +34,14 @@ zookeeper:
       value: "2181"
 
 
-kafka:
+kafkanew:
   enabled: true
   image: confluentinc/cp-kafka:latest
   imagePullPolicy: Never
+  service:
+    type: NodePort
+    port: 9092
+    nodePort: 30092
   environment:
     - name: KAFKA_LISTENERS
       value: "PLAINTEXT://0.0.0.0:9092"
@@ -53,10 +57,6 @@ kafka:
       value: "1"
     - name : KAFKA_BROKER_ID
       value: "1"
-  service:
-    type: NodePort
-    port: 9092
-    nodePort: 30092
 
 
 producer:
@@ -79,7 +79,7 @@ consumer:
     nodePort: 30081
 
 
-service: 
-  host: "kafka-tutorial.local"
-  port: 8080
-  type: NodePort
+# service: 
+#   host: "kafka-tutorial.local"
+#   port: 8080
+#   type: NodePort

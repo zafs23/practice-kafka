@@ -15,16 +15,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: kafka
+  name: kafkanew
 spec:
   selector:
-    app: kafka
-  type: {{ .Values.kafka.service.type }}
+    app: kafkanew
+  type: {{ .Values.kafkanew.service.type }}
   ports:
     - protocol: TCP
-      port: {{ .Values.kafka.service.port }}
-      targetPort: {{ .Values.kafka.service.port }}
-      nodePort: {{ .Values.kafka.service.nodePort | default 30092 }}
+      port: {{ .Values.kafkanew.service.port }}
+      targetPort: {{ .Values.kafkanew.service.port }}
+      nodePort: {{ .Values.kafkanew.service.nodePort | default 30092 }}
 
 --- 
 apiVersion: v1
