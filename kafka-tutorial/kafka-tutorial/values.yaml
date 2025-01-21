@@ -34,11 +34,12 @@ zookeeper:
       value: "2181"
 
 
-kafkanew:
+kafka:
   enabled: true
   image: confluentinc/cp-kafka:latest
   imagePullPolicy: Never
   service:
+    name: kafkanew
     type: NodePort
     port: 9092
     nodePort: 30092

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	brokers := []string{"kafka:9092"} // broker list
+	brokers := []string{"kafkanew:9092"} // broker list
 	// brokers := []string{"localhost:29092"}
 	// create a topic
 	topic := "TEST_TOPIC"
