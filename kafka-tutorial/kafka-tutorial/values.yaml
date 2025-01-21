@@ -26,12 +26,13 @@ zookeeper:
   enabled: true
   image: confluentinc/cp-zookeeper:latest
   imagePullPolicy: Never
-  environment:
-    - name: ZOOKEEPER_CLIENT_PORT
-      value: "2181"
   service:
     type: ClusterIP
     port: 2181
+  environment:
+    - name: ZOOKEEPER_CLIENT_PORT
+      value: "2181"
+
 
 kafka:
   enabled: true

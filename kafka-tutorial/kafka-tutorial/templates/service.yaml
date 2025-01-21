@@ -18,7 +18,7 @@ metadata:
   name: kafka
 spec:
   selector:
-    app: zookeeper
+    app: kafka
   type: {{ .Values.kafka.service.type }}
   ports:
     - protocol: TCP
