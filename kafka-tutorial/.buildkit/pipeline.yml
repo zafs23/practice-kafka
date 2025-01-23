@@ -1,5 +1,13 @@
 pipeline:
   stages:
+    - name: run-go-tests
+      steps: 
+      - name: test-producer
+        run: 
+          cmd: ["bash", "-C", "cd producer && go test -cover -coverprofile=coverage.out ./..."]
+      - name: test-consumer
+        run: 
+          cmd: ["bash", "-C", "cd consumer && go test -cover -coverprofile=coverage.out ./..."]
     - name: build-producer
       steps: 
       - name: build-producer-image
@@ -9,8 +17,10 @@ pipeline:
           dockerfile: producer/Dockerfile
         opts:
           build-arg:
-            BUILDKIT_INLINE_CACHE: "1" 
-    
+            BUILDKIT_INLINE_CACHE: "1"
+        output:
+          type: image
+          ref: "producer:latest"
     - name: build-consumer
       steps:
       - name: build-consumer-image
@@ -21,6 +31,9 @@ pipeline:
         opts:
           build-arg:
             BUILDKIT_INLINE_CACHE: "1"
+        output:
+          type: image
+          ref: "consumer:latest"
     
     - name: tag-images
       steps: 
@@ -30,21 +43,25 @@ pipeline:
       - name: tag-consumer
         run:
           cmd: ["docker", "tag", "consumer:latest", "consumer:v1.0.0"]
+    
+    - name: push-producer
+      steps:
+      - name: push-producer-image
+        source:
+          type: image
+          ref: "producer:latest"
+        output:
+          type: registry
+          ref: "docker.sendgrid.net/sendgrid/kafka-tutorial"
+    
+    - name: push-consumer
+      steps:
+      - name: push-consumer-image
+        source:
+          type: image
+          ref: "consumer:latest"
+        output:
+          type: registry
+          ref: "docker.sendgrid.net/sendgrid/kafka-tutorial"
 
-    - name: run-go-tests
-      steps: 
-        - name: test-producer
-          run: 
-            cmd: ["bash", "-C", "cd producer && go test -cover -coverprofile=coverage.out ./..."]
-        - name: test-consumer
-          run: 
-            cmd: ["bash", "-C", "cd consumer && go test -cover -coverprofile=coverage.out ./..."]
-    - name: push-images
-      steps: 
-        - name: push-producer
-          run: 
-            cmd: ["docker", "push", "producer:v1.0.0"]
-        - name: push-consumer
-          run: 
-            cmd: ["docker", "push", "consumer:v1.0.0"]
 

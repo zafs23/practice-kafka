@@ -5,13 +5,13 @@
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
 
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
-image:
-  repository: kafka-tutorial
-  # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: latest
+resources:
+  limits:
+    cpu: 1.0
+    memory: 512Mi
+  requests:
+    cpu: 1.0
+    memory: 512Mi
 
 
 ingress: 
@@ -25,7 +25,7 @@ ingress:
 zookeeper:
   enabled: true
   image: confluentinc/cp-zookeeper:latest
-  imagePullPolicy: Never
+  imagePullPolicy: IfNotPresent
   service:
     type: ClusterIP
     port: 2181
@@ -37,7 +37,7 @@ zookeeper:
 kafka:
   enabled: true
   image: confluentinc/cp-kafka:latest
-  imagePullPolicy: Never
+  imagePullPolicy: IfNotPresent
   service:
     name: kafkanew
     type: NodePort
@@ -62,8 +62,10 @@ kafka:
 
 producer:
   enabled: true
-  image: producer:latest
-  imagePullPolicy: Never
+  image: 
+    repository: "docker.sendgrid.net/sendgrid/kafka-tutorial/producer"
+    tag: "latest"
+    pullPolicy: "IfNotPresent"
   service:
     type: NodePort
     port: 8080
@@ -72,8 +74,10 @@ producer:
 
 consumer:
   enabled: true
-  image: consumer:latest
-  imagePullPolicy: Never
+  image: 
+    repository: "docker.sendgrid.net/sendgrid/kafka-tutorial/consumer"
+    tag: "latest"
+    pullPolicy: "IfNotPresent"
   service:
     type: NodePort
     port: 8081

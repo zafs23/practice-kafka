@@ -15,6 +15,13 @@ spec:
       containers:
         - name: zookeeper
           image: "{{ .Values.zookeeper.image }}"
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
           env:
           {{- range $env := .Values.zookeeper.environment }}
             - name: "{{ $env.name }}"
@@ -41,6 +48,13 @@ spec:
       containers:
         - name: kafka
           image: "{{ .Values.kafka.image }}"
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
           env:
             {{- range $env := .Values.kafka.environment }}
             - name: "{{ $env.name }}"
@@ -66,8 +80,15 @@ spec:
     spec:
       containers:
         - name: producer
-          image: "{{ .Values.producer.image }}"
-          imagePullPolicy: "{{ .Values.producer.imagePullPolicy }}"
+          image: "{{ .Values.producer.image.repository }}:{{ .Values.producer.image.tag }}"
+          imagePullPolicy: "{{ .Values.producer.image.imagePullPolicy }}"
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
           env:
             - name: KAFKA_BROKER
               value: "kafkanew:{{ .Values.kafka.service.port }}"
@@ -91,8 +112,15 @@ spec:
     spec:
       containers:
         - name: consumer
-          image: "{{ .Values.consumer.image }}"
-          imagePullPolicy: "{{ .Values.consumer.imagePullPolicy }}"
+          image: "{{ .Values.consumer.image.repository }}:{{ .Values.consumer.image.tag }}"
+          imagePullPolicy: "{{ .Values.consumer.image.imagePullPolicy }}"
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
           env:
             - name: KAFKA_BROKER
               value: "kafkanew:{{ .Values.kafka.service.port }}"
