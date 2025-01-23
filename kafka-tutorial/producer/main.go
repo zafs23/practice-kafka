@@ -19,7 +19,7 @@ type MessagePayload struct {
 
 var (
 	// We'll read the broker address from ENV or default
-	brokerAddr = getEnv("KAFKA_BROKER", "kafka:9092")
+	brokerAddr = getEnv("KAFKA_BROKER", "kafkanew:9092")
 	topic      = getEnv("KAFKA_TOPIC", "TEST_TOPIC")
 	// Create a Kafka writer at startup
 	kafkaWriter *kafka.Writer

@@ -47,6 +47,8 @@ services:
       BROKERS: "kafka:9092"
       TOPIC: "TEST_TOPIC"
       ROLE: "producer"
+    ports:
+      - "8080:8080"
 
   consumer:
     build:
@@ -60,3 +62,5 @@ services:
       BROKERS: "kafka:9092"
       TOPIC: "TEST_TOPIC"
       ROLE: "consumer"
+    ports:
+      - "8081:8081"

@@ -15,7 +15,7 @@ import (
 var (
 	messagesMu sync.Mutex
 	messages   []string
-	brokerAddr = getEnv("KAFKA_BROKER", "kafka:9092")
+	brokerAddr = getEnv("KAFKA_BROKER", "kafkanew:9092")
 	topic      = getEnv("KAFKA_TOPIC", "TEST_TOPIC")
 )
 
