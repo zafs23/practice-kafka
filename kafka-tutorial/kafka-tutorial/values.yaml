@@ -66,6 +66,11 @@ producer:
     repository: "docker.sendgrid.net/sendgrid/kafka-tutorial/producer"
     tag: "latest"
     pullPolicy: "IfNotPresent"
+  environment:
+    - name: KAFKA_BROKER
+      value: "kafkanew:9092"
+    - name: KAFKA_TOPIC
+      value: "TEST_TOPIC"
   service:
     type: NodePort
     port: 8080
@@ -78,6 +83,11 @@ consumer:
     repository: "docker.sendgrid.net/sendgrid/kafka-tutorial/consumer"
     tag: "latest"
     pullPolicy: "IfNotPresent"
+  environment:
+    - name: KAFKA_BROKER
+      value: "kafkanew:9092"
+    - name: KAFKA_TOPIC
+      value: "TEST_TOPIC"
   service:
     type: NodePort
     port: 8081
