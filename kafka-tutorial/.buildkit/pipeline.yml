@@ -1,67 +1,88 @@
-pipeline:
-  stages:
-    - name: run-go-tests
-      steps: 
-      - name: test-producer
-        run: 
-          cmd: ["bash", "-C", "cd producer && go test -cover -coverprofile=coverage.out ./..."]
-      - name: test-consumer
-        run: 
-          cmd: ["bash", "-C", "cd consumer && go test -cover -coverprofile=coverage.out ./..."]
-    - name: build-producer
-      steps: 
-      - name: build-producer-image
-        frontend: dockerfile.dockerfile.v0
-        inputs:
-          context: producer 
-          dockerfile: producer/Dockerfile
-        opts:
-          build-arg:
-            BUILDKIT_INLINE_CACHE: "1"
-        output:
-          type: image
-          ref: "producer:latest"
-    - name: build-consumer
-      steps:
-      - name: build-consumer-image
-        frontend: dockerfile.dockerfile.v0
-        inputs:
-          context: producer 
-          dockerfile: consumer/Dockerfile
-        opts:
-          build-arg:
-            BUILDKIT_INLINE_CACHE: "1"
-        output:
-          type: image
-          ref: "consumer:latest"
-    
-    - name: tag-images
-      steps: 
-      - name: tag-producer
-        run:
-          cmd: ["docker", "tag", "producer:latest", "producer:v1.0.0"]
-      - name: tag-consumer
-        run:
-          cmd: ["docker", "tag", "consumer:latest", "consumer:v1.0.0"]
-    
-    - name: push-producer
-      steps:
-      - name: push-producer-image
-        source:
-          type: image
-          ref: "producer:latest"
-        output:
-          type: registry
-          ref: "docker.sendgrid.net/sendgrid/kafka-tutorial"
-    
-    - name: push-consumer
-      steps:
-      - name: push-consumer-image
-        source:
-          type: image
-          ref: "consumer:latest"
-        output:
-          type: registry
-          ref: "docker.sendgrid.net/sendgrid/kafka-tutorial"
 
 
+steps:
+
+  - label: issue-version
+    key: issue-version
+    plugins:
+      namespace/chronicle#${CHRONICLE_PLUGIN_VERSION}:
+        action: issue-version
+
+  - wait
+
+  - label: ":golang: :docker: unit tests"
+    key: unit-tests
+    depends_on:
+      - issue-version
+    command:
+      - make test
+
+  - label: ":sparkles: :go: gocov annotate"
+    key: gocov
+    depends_on:
+      - issue-version
+    plugins:
+      namespace-ops/gocov-annotate#${GOCOV_ANNOTATE_PLUGIN_VERSION}:
+        arguments: -tags=unit
+
+
+  - label: ':golang: go test'
+    command:
+      - 'make test'
+  
+  - label: ':golang: go vet'
+    command:
+      - 'make vet'
+  
+  - wait
+
+
+  - label: "Constructing :building_construction: your :docker: image :gear:"
+    key: build-docker-image
+    depends_on:
+      - unit-tests
+      - gocov
+      # - lint
+      # - acceptance-tests
+      # - integration-tests
+    plugins:
+      <namespace>-ops/docker#${DOCKER_PLUGIN_VERSION}:
+        image: 'namespace/app-name'
+        dockerfile: Dockerfile
+        master_tag_latest: 'true'
+
+
+
+  - block: 'Deploy to staging?'
+    prompt: 'Would you like to deploy to staging?'
+  - label: deploy-stage
+    plugins:
+    - sendgrid/chronicle#${CHRONICLE_PLUGIN_VERSION}:
+        action: argo-cd-deployment
+        applications:
+          - 'application_name'
+        clusters:
+          - '*staging_mdw1*'
+        helm_parameters: image.tag
+
+  ##############################
+  # Publish it
+  ##############################
+  - label: ':docker: publish docker latest image'
+    command:
+      - 'make build_prod_image'
+      - 'make push_docker_latest'
+    branches: 'gokubed' # If you have not pushed your changes to master yet, change this to your feature branch name
+  
+  - label: ':docker: publish docker versioned image'
+    command:
+      - 'VERSION=$${VER_DOCKER_TAG} make tag_version'
+      - 'VERSION=$${VER_DOCKER_TAG} make push_docker_tagged_version'
+  
+  - wait
+
+  - label: ':octocat: release'
+    if: build.branch == '${BUILDKITE_PIPELINE_DEFAULT_BRANCH}'
+    plugins:
+      <namespace>/chronicle#${CHRONICLE_PLUGIN_VERSION}:
+        action: create-release
