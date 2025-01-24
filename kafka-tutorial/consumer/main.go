@@ -9,7 +9,20 @@ import (
 	"sync"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/segmentio/kafka-go"
+)
+
+// Prometheus metrics
+var (
+	messagesConsumed = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "kafka_messages_consumed_total",
+			Help: "Total number of Kafka messages consumed",
+		},
+		[]string{"topic"},
+	)
 )
 
 var (
@@ -27,9 +40,21 @@ func getEnv(key, fallback string) string {
 	return val
 }
 
+func init() {
+	// Register Prometheus metrics
+	prometheus.MustRegister(messagesConsumed)
+}
+
 func main() {
 	// Start a background goroutine to consume from Kafka
 	go consumeMessages()
+
+	// Start Prometheus HTTP server
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		log.Println("Starting Prometheus metrics server on :8082")
+		log.Fatal(http.ListenAndServe(":8082", nil))
+	}()
 
 	// Setup HTTP routes
 	http.HandleFunc("/messages", handleGetMessages) // GET /messages
@@ -63,6 +88,9 @@ func consumeMessages() {
 		msg := string(m.Value)
 		log.Printf("Received message: %s", msg)
 
+		// Increment Prometheus counter
+		messagesConsumed.WithLabelValues(topic).Inc()
+
 		messagesMu.Lock()
 		messages = append(messages, msg)
 		messagesMu.Unlock()
@@ -94,41 +122,3 @@ func handleForceRead(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Consumer is reading messages in the background.\n"))
 }
-
-// func main() {
-// 	// Kafka configuration
-// 	brokers := []string{"kafkanew:9092"} // k8-staging
-// 	// brokers := []string{"kafka:9092"} // multi container when using docker compose --build
-// 	// brokers := []string{"localhost:29092"}
-// 	topic := "TEST_TOPIC"
-// 	groupID := "consumerGroup"
-
-// 	// Create a new context
-// 	ctx := context.Background()
-
-// 	// Initialize a new reader with the brokers, topic, and groupID
-// 	// The reader reads messages from the Kafka topic.
-// 	reader := kafka.NewReader(kafka.ReaderConfig{
-// 		Brokers:  brokers,
-// 		Topic:    topic,
-// 		GroupID:  groupID,
-// 		MinBytes: 10e3, // 10KB
-// 		MaxBytes: 10e6, // 10MB
-// 	})
-
-// 	defer reader.Close()
-
-// 	fmt.Println("Start consuming ...")
-
-// 	// Read messages
-// 	for {
-// 		msg, err := reader.ReadMessage(ctx)
-// 		if err != nil {
-// 			log.Fatalf("failed to read message: %s", err)
-// 		}
-// 		fmt.Printf("Message at offset %d: %s = %s\n", msg.Offset, string(msg.Key), string(msg.Value))
-
-// 		// Simulate processing time
-// 		// time.Sleep(1 * time.Second)
-// 	}
-// }
