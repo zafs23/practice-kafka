@@ -9,8 +9,7 @@ FROM golang:1.20-alpine AS builder
 
 # set working dir
 
-WORKDIR /app
-
+WORKDIR /go/src/github.com/
 # COPY go module files
 
 COPY go.mod go.sum ./
@@ -29,6 +28,6 @@ FROM alpine:3.18
 
 # copy compiled binary from builder stage
 
-COPY --from=builder /producer /app/producer
+COPY --from=builder /go/src/github.com/kafka-tutorial/producer /go/src/github.com/kafka-tutorial/producer
 
-CMD ["/app/producer"]
+CMD ["./kafka-tutorial/producer"]
