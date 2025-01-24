@@ -11,7 +11,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "22181:2181"
-  kafka:
+  kafkanew:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
     depends_on:
@@ -23,7 +23,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafkanew:9092
       # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092, PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
@@ -40,11 +40,12 @@ services:
       context: ./producer
       dockerfile: Dockerfile
     container_name: producer
+    image: producer:v1.0.0
     depends_on:
-      kafka:
+      kafkanew:
         condition: service_healthy
     environment:
-      BROKERS: "kafka:9092"
+      BROKERS: "kafkanew:9092"
       TOPIC: "TEST_TOPIC"
       ROLE: "producer"
     ports:
@@ -55,11 +56,12 @@ services:
       context: ./consumer
       dockerfile: Dockerfile
     container_name: consumer
+    image: consumer:v1.0.0
     depends_on:
-      kafka:
+      kafkanew:
         condition: service_healthy
     environment:
-      BROKERS: "kafka:9092"
+      BROKERS: "kafkanew:9092"
       TOPIC: "TEST_TOPIC"
       ROLE: "consumer"
     ports:

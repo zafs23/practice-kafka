@@ -62,10 +62,8 @@ kafka:
 
 producer:
   enabled: true
-  image: 
-    repository: "docker.sendgrid.net/sendgrid/kafka-tutorial/producer"
-    tag: "latest"
-    pullPolicy: "IfNotPresent"
+  image: "producer:v1.0.0"
+  imagePullPolicy: "Never"
   environment:
     - name: KAFKA_BROKER
       value: "kafkanew:9092"
@@ -79,10 +77,8 @@ producer:
 
 consumer:
   enabled: true
-  image: 
-    repository: "docker.sendgrid.net/sendgrid/kafka-tutorial/consumer"
-    tag: "latest"
-    pullPolicy: "IfNotPresent"
+  image: "consumer:v1.0.0"
+  imagepullPolicy: "Never"
   environment:
     - name: KAFKA_BROKER
       value: "kafkanew:9092"

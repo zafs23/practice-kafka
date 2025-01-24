@@ -80,8 +80,8 @@ spec:
     spec:
       containers:
         - name: producer
-          image: "{{ .Values.producer.image.repository }}:{{ .Values.producer.image.tag }}"
-          imagePullPolicy: "{{ .Values.producer.image.imagePullPolicy }}"
+          image: "{{ .Values.producer.image }}"
+          imagePullPolicy: "{{ .Values.producer.imagePullPolicy }}"
           resources:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
@@ -112,8 +112,8 @@ spec:
     spec:
       containers:
         - name: consumer
-          image: "{{ .Values.consumer.image.repository }}:{{ .Values.consumer.image.tag }}"
-          imagePullPolicy: "{{ .Values.consumer.image.imagePullPolicy }}"
+          image: "{{ .Values.consumer.image }}"
+          imagePullPolicy: "{{ .Values.consumer.imagePullPolicy }}"
           resources:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
